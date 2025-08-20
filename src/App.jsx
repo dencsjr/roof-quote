@@ -333,28 +333,51 @@ export default function MetalRoofQuoteApp() {
       </div>
 
       {/* Header inputs */}
-      <div className="mt-4 grid md:grid-cols-4 gap-3">
-        <label className="text-sm">Customer
-          <input className="border p-2 rounded w-full" placeholder="Customer name" value={customer} onChange={(e) => setCustomer(e.target.value)} />
-        </label>
-        <label className="text-sm">PO
-          <input className="border p-2 rounded w-full" placeholder="PO #" value={po} onChange={(e) => setPo(e.target.value)} />
-        </label>
-        <label className="text-sm">Ice & Water
-          <select className="border p-2 rounded w-full" value={iwsChoice} onChange={(e) => setIwsChoice(e.target.value)}>
-            <option value="standard">High Temp Ice & Water</option>
-            <option value="butyl">Butyl based High Temp Ice & Water</option>
-          </select>
-        </label>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">Markup %
-            <input type="number" className="border p-2 rounded w-full" value={markupPct} onChange={(e) => setMarkupPct(toNum(e.target.value))} />
-          </label>
-          <label className="text-sm">Tax % (locked)
-            <input type="number" disabled className="border p-2 rounded w-full bg-gray-100" value={taxPct} />
-          </label>
-        </div>
-      </div>
+     <div className="mt-4 bg-white border rounded-2xl overflow-hidden">
+  <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Job Details</div>
+  <div className="px-3 divide-y">
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-customer" className="text-sm font-medium whitespace-nowrap">Customer</label>
+      <input id="field-customer" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             placeholder="Customer name"
+             value={customer}
+             onChange={(e) => setCustomer(e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-po" className="text-sm font-medium whitespace-nowrap">PO</label>
+      <input id="field-po" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             placeholder="PO #"
+             value={po}
+             onChange={(e) => setPo(e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-iws" className="text-sm font-medium whitespace-nowrap">Ice & Water</label>
+      <select id="field-iws" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+              value={iwsChoice}
+              onChange={(e) => setIwsChoice(e.target.value)}>
+        <option value="standard">High Temp Ice & Water</option>
+        <option value="butyl">Butyl based High Temp Ice & Water</option>
+      </select>
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-markup" className="text-sm font-medium whitespace-nowrap">Markup %</label>
+      <input id="field-markup" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={markupPct}
+             onChange={(e) => setMarkupPct(toNum(e.target.value))} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-tax" className="text-sm font-medium whitespace-nowrap">Tax % (locked)</label>
+      <input id="field-tax" type="number" disabled
+             className="border p-2 rounded w-48 h-10 bg-gray-100 max-w-[60vw]"
+             value={taxPct} />
+    </div>
+  </div>
+</div>
 
       {/* Notes */}
       <div className="mt-4">
@@ -364,35 +387,82 @@ export default function MetalRoofQuoteApp() {
       </div>
 
       {/* Measurements */}
-      <div className="mt-4 grid md:grid-cols-3 gap-3">
-        <label className="text-sm">Total Square Feet
-          <input type="number" className="border p-2 rounded w-full" value={inputs.sqft} onChange={(e) => update("sqft", e.target.value)} />
-        </label>
-        <label className="text-sm">Hips (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.hips} onChange={(e) => update("hips", e.target.value)} />
-        </label>
-        <label className="text-sm">Ridges (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.ridges} onChange={(e) => update("ridges", e.target.value)} />
-        </label>
-        <label className="text-sm">Gable Rakes (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.gables} onChange={(e) => update("gables", e.target.value)} />
-        </label>
-        <label className="text-sm">Drip Edge / Eaves (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.eaves} onChange={(e) => update("eaves", e.target.value)} />
-        </label>
-        <label className="text-sm">S-Valleys (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.svalleys} onChange={(e) => update("svalleys", e.target.value)} />
-        </label>
-        <label className="text-sm">Sidewall (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.sidewalls} onChange={(e) => update("sidewalls", e.target.value)} />
-        </label>
-        <label className="text-sm">Endwall (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.endwalls} onChange={(e) => update("endwalls", e.target.value)} />
-        </label>
-        <label className="text-sm">Transition (lf)
-          <input type="number" className="border p-2 rounded w-full" value={inputs.transitions} onChange={(e) => update("transitions", e.target.value)} />
-        </label>
-      </div>
+      <div className="mt-4 bg-white border rounded-2xl overflow-hidden">
+  <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Measurements</div>
+  <div className="px-3 divide-y">
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-sqft" className="text-sm font-medium whitespace-nowrap">Total Square Feet</label>
+      <input id="field-sqft" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.sqft}
+             onChange={(e) => update("sqft", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-hips" className="text-sm font-medium whitespace-nowrap">Hips (lf)</label>
+      <input id="field-hips" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.hips}
+             onChange={(e) => update("hips", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-ridges" className="text-sm font-medium whitespace-nowrap">Ridges (lf)</label>
+      <input id="field-ridges" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.ridges}
+             onChange={(e) => update("ridges", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-gables" className="text-sm font-medium whitespace-nowrap">Gable Rakes (lf)</label>
+      <input id="field-gables" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.gables}
+             onChange={(e) => update("gables", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-eaves" className="text-sm font-medium whitespace-nowrap">Drip Edge / Eaves (lf)</label>
+      <input id="field-eaves" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.eaves}
+             onChange={(e) => update("eaves", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-svalleys" className="text-sm font-medium whitespace-nowrap">S-Valleys (lf)</label>
+      <input id="field-svalleys" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.svalleys}
+             onChange={(e) => update("svalleys", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-sidewalls" className="text-sm font-medium whitespace-nowrap">Sidewall (lf)</label>
+      <input id="field-sidewalls" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.sidewalls}
+             onChange={(e) => update("sidewalls", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-endwalls" className="text-sm font-medium whitespace-nowrap">Endwall (lf)</label>
+      <input id="field-endwalls" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.endwalls}
+             onChange={(e) => update("endwalls", e.target.value)} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 py-2">
+      <label htmlFor="field-transitions" className="text-sm font-medium whitespace-nowrap">Transition (lf)</label>
+      <input id="field-transitions" type="number" inputMode="decimal"
+             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
+             value={inputs.transitions}
+             onChange={(e) => update("transitions", e.target.value)} />
+    </div>
+  </div>
+</div>
 
       {/* Side-by-side comparison */}
       <div className="mt-6 grid md:grid-cols-2 gap-4">

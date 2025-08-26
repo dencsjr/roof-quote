@@ -355,30 +355,10 @@ useEffect(() => {
              onChange={(e) => setMarkupPct(toNum(e.target.value))} />
     </div>
 
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-tax" className="text-sm font-medium whitespace-nowrap">Tax % (locked)</label>
-      <input id="field-tax" type="number" disabled
-             className="border p-2 rounded w-48 h-10 bg-gray-100 max-w-[60vw]"
-             value={taxPct} />
-    </div>
   </div>
 </div>
 
-      {/* Notes */}
-      <div className="mt-4">
-        <label className="text-sm block">
-          Notes
-          <textarea
-            className="border p-2 rounded w-full"
-            rows={3}
-            placeholder="Add any job notes (delivery, special trims, etc.)"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </label>
-      </div>
-
-      {/* Measurements */}
+            {/* Measurements */}
       <div className="mt-4 bg-white border rounded-2xl overflow-hidden">
         <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Measurements</div>
         <div className="px-3 divide-y">
@@ -426,6 +406,19 @@ useEffect(() => {
             <input id="field-transitions" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.transitions} onChange={(e) => update("transitions", e.target.value)} />
           </div>
         </div>
+      </div>
+
+      {/* Notes */}
+      <div className="mt-4">
+        <label htmlFor="field-notes" className="text-sm font-medium block mb-1">Notes</label>
+        <textarea
+          id="field-notes"
+          className="border p-3 rounded w-full h-28"
+          rows={5}
+          placeholder="Add any job notes (delivery, special trims, etc.)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
       </div>
 
       {/* Side-by-side comparison */}

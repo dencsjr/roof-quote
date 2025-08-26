@@ -44,8 +44,8 @@ const PRICES = {
   z: { "24": 9.96, "26": 9.74 }, // 10' each, NO extra piece
   zPerf: { "24": 27.41, "26": 26.43 }, // 10' each, NO extra piece
   iws: {
-    standard: { label: "High Temp Ice & Water", price: 64.29, coverSqft: 185 },
-    butyl: { label: "Butyl based High Temp Ice & Water", price: 129.60, coverSqft: 185 },
+    standard: { label: "Polyglass", price: 64.29, coverSqft: 185 },
+    butyl: { label: "GripRite", price: 129.60, coverSqft: 185 },
   },
   clips: { pricePerBox: 246.17, piecesPerBox: 1000, lfPerPiece: 2 }, // 1 piece per 2 lf panels
   screws: { pricePerBag: 18.91, piecesPerBag: 250, lfPerPiece: 1 }, // 1 screw per lf panels
@@ -357,8 +357,8 @@ export default function MetalRoofQuoteApp() {
       <select id="field-iws" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
               value={iwsChoice}
               onChange={(e) => setIwsChoice(e.target.value)}>
-        <option value="standard">High Temp Ice & Water</option>
-        <option value="butyl">Butyl based High Temp Ice & Water</option>
+        <option value="standard">Polyglass</option>
+        <option value="butyl">GripRite</option>
       </select>
     </div>
 

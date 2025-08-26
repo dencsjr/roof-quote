@@ -321,12 +321,12 @@ useEffect(() => {
     <div className="p-4 max-w-5xl mx-auto">
       <div className="flex items-center gap-3">
         <img src={LOGO_SRC} alt="Empire Supply" className="h-12 w-auto" />
-        <h1 className="text-xl font-bold flex items-center gap-2"><FileText className="w-5 h-5"/> Metal Roofing Quote <span className="ml-2 text-xs text-slate-500">v{APP_VERSION}</span></h1>
+        <h1 className="text-base font-bold flex items-center gap-2"><FileText className="w-5 h-5"/> Metal Roofing Quote <span className="ml-2 text-slate-500">v{APP_VERSION}</span></h1>
       </div>
-
+      <hr className="my-4 border-t border-slate-300" />
       {/* Header inputs */}
      <div className="mt-4 mb-6 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
-  <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Job Details</div>
+  <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Job Details</div>
   <div className="px-3 divide-y">
     <div className="flex items-center justify-between gap-3 py-2">
       <label htmlFor="field-customer" className="text-sm font-medium whitespace-nowrap">Customer</label>
@@ -354,9 +354,9 @@ useEffect(() => {
 
   </div>
 </div>
-
+      <hr className="my-4 border-t border-slate-300" />
             <div className="mt-0 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
-        <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Measurements</div>
+        <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Measurements</div>
         <div className="px-3 divide-y">
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-sqft" className="text-sm font-medium whitespace-nowrap">Total Square Feet</label>

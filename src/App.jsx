@@ -249,6 +249,11 @@ useEffect(() => {
       doc.text(`Taxable: ${fmt(res.taxableBase || 0)}`, x, y); y += 12;
       doc.text(`Tax (${taxPct}%): ${fmt(res.taxAmt || 0)}`, x, y); y += 12;
       doc.setFontSize(12); doc.text(`Grand Total: ${fmt(res.grandTotal || 0)}`, x, y);
+      // Footer just beneath the totals
+      y += 16;
+      if (y > pageHeight - bottom - 12) { doc.addPage(); y = top; }
+      doc.setFontSize(9);
+      doc.text("Powered by Empire Supply - 801-391-7549", x, y);
     };
 
     // Draw both columns
@@ -367,88 +372,60 @@ useEffect(() => {
 
       {/* Notes */}
       <div className="mt-4">
-        <label className="text-sm block">Notes
-          <textarea className="border p-2 rounded w-full" rows={3} placeholder="Add any job notes (delivery, special trims, etc.)" value={notes} onChange={(e)=>setNotes(e.target.value)} />
+        <label className="text-sm block">
+          Notes
+          <textarea
+            className="border p-2 rounded w-full"
+            rows={3}
+            placeholder="Add any job notes (delivery, special trims, etc.)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
         </label>
       </div>
 
       {/* Measurements */}
       <div className="mt-4 bg-white border rounded-2xl overflow-hidden">
-  <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Measurements</div>
-  <div className="px-3 divide-y">
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-sqft" className="text-sm font-medium whitespace-nowrap">Total Square Feet</label>
-      <input id="field-sqft" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.sqft}
-             onChange={(e) => update("sqft", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-hips" className="text-sm font-medium whitespace-nowrap">Hips (lf)</label>
-      <input id="field-hips" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.hips}
-             onChange={(e) => update("hips", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-ridges" className="text-sm font-medium whitespace-nowrap">Ridges (lf)</label>
-      <input id="field-ridges" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.ridges}
-             onChange={(e) => update("ridges", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-gables" className="text-sm font-medium whitespace-nowrap">Gable Rakes (lf)</label>
-      <input id="field-gables" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.gables}
-             onChange={(e) => update("gables", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-eaves" className="text-sm font-medium whitespace-nowrap">Drip Edge / Eaves (lf)</label>
-      <input id="field-eaves" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.eaves}
-             onChange={(e) => update("eaves", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-svalleys" className="text-sm font-medium whitespace-nowrap">S-Valleys (lf)</label>
-      <input id="field-svalleys" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.svalleys}
-             onChange={(e) => update("svalleys", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-sidewalls" className="text-sm font-medium whitespace-nowrap">Sidewall (lf)</label>
-      <input id="field-sidewalls" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.sidewalls}
-             onChange={(e) => update("sidewalls", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-endwalls" className="text-sm font-medium whitespace-nowrap">Endwall (lf)</label>
-      <input id="field-endwalls" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.endwalls}
-             onChange={(e) => update("endwalls", e.target.value)} />
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-transitions" className="text-sm font-medium whitespace-nowrap">Transition (lf)</label>
-      <input id="field-transitions" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={inputs.transitions}
-             onChange={(e) => update("transitions", e.target.value)} />
-    </div>
-  </div>
-</div>
+        <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Measurements</div>
+        <div className="px-3 divide-y">
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-sqft" className="text-sm font-medium whitespace-nowrap">Total Square Feet</label>
+            <input id="field-sqft" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.sqft} onChange={(e) => update("sqft", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-hips" className="text-sm font-medium whitespace-nowrap">Hips (lf)</label>
+            <input id="field-hips" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.hips} onChange={(e) => update("hips", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-ridges" className="text-sm font-medium whitespace-nowrap">Ridges (lf)</label>
+            <input id="field-ridges" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.ridges} onChange={(e) => update("ridges", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-gables" className="text-sm font-medium whitespace-nowrap">Gable Rakes (lf)</label>
+            <input id="field-gables" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.gables} onChange={(e) => update("gables", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-eaves" className="text-sm font-medium whitespace-nowrap">Drip Edge / Eaves (lf)</label>
+            <input id="field-eaves" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.eaves} onChange={(e) => update("eaves", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-svalleys" className="text-sm font-medium whitespace-nowrap">S-Valleys (lf)</label>
+            <input id="field-svalleys" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.svalleys} onChange={(e) => update("svalleys", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-sidewalls" className="text-sm font-medium whitespace-nowrap">Sidewall (lf)</label>
+            <input id="field-sidewalls" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.sidewalls} onChange={(e) => update("sidewalls", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-endwalls" className="text-sm font-medium whitespace-nowrap">Endwall (lf)</label>
+            <input id="field-endwalls" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.endwalls} onChange={(e) => update("endwalls", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-transitions" className="text-sm font-medium whitespace-nowrap">Transition (lf)</label>
+            <input id="field-transitions" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.transitions} onChange={(e) => update("transitions", e.target.value)} />
+          </div>
+        </div>
+      </div>
 
       {/* Side-by-side comparison */}
       <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -466,13 +443,15 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                  {res.lines.filter((l) => l.qty > 0 && l.total > 0).map((ln, idx) => (
-                    <tr key={idx} className="border-b">
-                      <td className="py-1">{ln.label}</td>
-                      <td className="py-1 text-right">{`${ln.qty % 1 === 0 ? ln.qty : Math.round(ln.qty)} ${ln.unit || ""}`} × {fmt(ln.price)}</td>
-                      <td className="py-1 text-right">{fmt(ln.total)}</td>
-                    </tr>
-                  ))}
+                  {res.lines
+                    .filter((l) => l.qty > 0 && l.total > 0)
+                    .map((ln, idx) => (
+                      <tr key={idx} className="border-b">
+                        <td className="py-1">{ln.label}</td>
+                        <td className="py-1 text-right">{`${ln.qty % 1 === 0 ? ln.qty : Math.round(ln.qty)} ${ln.unit || ""}`} × {fmt(ln.price)}</td>
+                        <td className="py-1 text-right">{fmt(ln.total)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             ) : (
@@ -480,10 +459,14 @@ useEffect(() => {
             )}
             {res && (
               <div className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                <div className="text-slate-600">Subtotal</div><div className="text-right font-medium">{fmt(res.subtotal || 0)}</div>
-                <div className="text-slate-600">Markup ({markupPct}%)</div><div className="text-right font-medium">{fmt(res.markupAmt || 0)}</div>
-                <div className="text-slate-600">Taxable</div><div className="text-right font-medium">{fmt(res.taxableBase || 0)}</div>
-                <div className="text-slate-600">Tax ({taxPct}%)</div><div className="text-right font-medium">{fmt(res.taxAmt || 0)}</div>
+                <div className="text-slate-600">Subtotal</div>
+                <div className="text-right font-medium">{fmt(res.subtotal || 0)}</div>
+                <div className="text-slate-600">Markup ({markupPct}%)</div>
+                <div className="text-right font-medium">{fmt(res.markupAmt || 0)}</div>
+                <div className="text-slate-600">Taxable</div>
+                <div className="text-right font-medium">{fmt(res.taxableBase || 0)}</div>
+                <div className="text-slate-600">Tax ({taxPct}%)</div>
+                <div className="text-right font-medium">{fmt(res.taxAmt || 0)}</div>
                 <div className="col-span-2 border-t pt-2 flex items-center">
                   <div className="text-base font-semibold">Grand Total</div>
                   <div className="ml-auto text-base font-semibold">{fmt(res.grandTotal || 0)}</div>
@@ -502,7 +485,8 @@ useEffect(() => {
           title="Export quote to PDF"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-900 text-white cursor-pointer pointer-events-auto relative z-10 hover:bg-slate-800 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-500"
         >
-          <Download className="w-4 h-4"/>Export PDF
+          <Download className="w-4 h-4" />
+          Export PDF
         </button>
         <button
           type="button"
@@ -514,6 +498,13 @@ useEffect(() => {
           Preview PDF
         </button>
       </div>
+
+      {/* Spacers and footer */}
+      <div className="h-6" aria-hidden="true"></div>
+      <div className="h-6" aria-hidden="true"></div>
+      <footer className="text-center text-sm text-slate-500">Powered by Empire Supply - 801-391-7549</footer>
+      <div className="h-6" aria-hidden="true"></div>
+      <div className="h-6" aria-hidden="true"></div>
 
       {isPreviewOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center" onClick={closePreview}>

@@ -8,11 +8,9 @@ const JsPDF = JSPDFNS.jsPDF || JSPDFNS.default || JSPDFNS;
 // --- App Version ---
 const APP_VERSION = "1.1.3"; // fix: closed JSX properly, restored inputs, stable in-app preview
 
-// --- Embedded logo (placeholder) ---
-// Tip: Upload your real PNG/JPEG using the "Upload Logo" control below.
-const LOGO_DATA_URL =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="; // 1x1 transparent
-const isValidDataUrl = (s) => typeof s === "string" && s.startsWith("data:image/") && s.length > 128;
+// --- Logo asset ---
+// Using your provided logo placed in /public/icons/icon-512.png (served from /icons/icon-512.png)
+const LOGO_SRC = "/icons/icon-512.png";
 
 // --- Formatting helpers ---
 const CURRENCY = "USD";
@@ -59,16 +57,27 @@ export default function MetalRoofQuoteApp() {
   const [iwsChoice, setIwsChoice] = useState("standard"); // standard | butyl
   const [notes, setNotes] = useState("");
 
-  // Logo state (persist custom uploads in localStorage)
-  const [logoDataUrl, setLogoDataUrl] = useState(() => {
-    const saved = localStorage.getItem("customLogoDataUrl");
-    return saved && saved.startsWith("data:image/") ? saved : LOGO_DATA_URL;
-  });
-  useEffect(() => {
-    if (logoDataUrl && logoDataUrl.startsWith("data:image/")) {
-      localStorage.setItem("customLogoDataUrl", logoDataUrl);
-    }
-  }, [logoDataUrl]);
+  // Precompute a DataURL of the logo for embedding into the PDF (jsPDF needs a data URL for reliability)
+const [pdfLogoDataUrl, setPdfLogoDataUrl] = useState(null);
+useEffect(() => {
+  try {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth || 512; canvas.height = img.naturalHeight || 512;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const data = canvas.toDataURL("image/png");
+        setPdfLogoDataUrl(data);
+      } catch (e) { console.warn("Logo toDataURL failed:", e?.message); }
+    };
+    img.onerror = () => console.warn("Logo failed to load from", LOGO_SRC);
+    img.src = LOGO_SRC;
+  } catch (e) { console.warn("Logo preload error:", e?.message); }
+}, []);
+
 
   // In-app preview state
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -204,10 +213,8 @@ export default function MetalRoofQuoteApp() {
 
     // Header logo + title
     try {
-      if (logoDataUrl && logoDataUrl.startsWith("data:image/")) {
-        const header = logoDataUrl.split(",", 1)[0];
-        const mime = /jpeg/i.test(header) ? "JPEG" : "PNG";
-        doc.addImage(logoDataUrl, mime, pageWidth / 2 - 130, 16, 260, 60);
+      if (pdfLogoDataUrl) {
+        doc.addImage(pdfLogoDataUrl, "PNG", pageWidth / 2 - 130, 16, 260, 60);
       }
     } catch (e) { console.warn("Logo skipped in PDF:", e?.message); }
 
@@ -304,32 +311,11 @@ export default function MetalRoofQuoteApp() {
       } catch (err) { console.warn("Data URI preview failed; forcing download:", err?.message); exportPDF(); }
     } catch (e) { console.error("PDF preview failed:", e); exportPDF(); }
   };
-
-  // Logo upload helpers
-  const handleLogoFile = (e) => {
-    const file = e.target.files?.[0]; if (!file) return;
-    if (!/^image\/(png|jpeg)$/.test(file.type)) { alert("Please choose a PNG or JPEG image."); e.target.value = ""; return; }
-    const reader = new FileReader(); reader.onload = () => setLogoDataUrl(String(reader.result)); reader.readAsDataURL(file); e.target.value = "";
-  };
-  const resetLogo = () => { localStorage.removeItem("customLogoDataUrl"); setLogoDataUrl(LOGO_DATA_URL); };
-
   return (
     <div className="p-4 max-w-5xl mx-auto">
       <div className="flex items-center gap-3">
-        {logoDataUrl && logoDataUrl.startsWith("data:image/") ? (
-          <img src={logoDataUrl} alt="Empire Supply" className="h-12 w-auto" />
-        ) : (
-          <div className="h-12 w-40 flex items-center justify-center text-xs text-slate-500 border rounded">Logo</div>
-        )}
+        <img src={LOGO_SRC} alt="Empire Supply" className="h-12 w-auto" />
         <h1 className="text-xl font-bold flex items-center gap-2"><FileText className="w-5 h-5"/> Metal Roofing Quote <span className="ml-2 text-xs text-slate-500">v{APP_VERSION}</span></h1>
-      </div>
-
-      <div className="mt-2 flex items-center gap-2">
-        <label className="text-xs px-3 py-1 border rounded cursor-pointer hover:bg-slate-50">
-          Upload Logo
-          <input type="file" accept="image/png,image/jpeg" className="hidden" onChange={handleLogoFile} />
-        </label>
-        <button type="button" onClick={resetLogo} className="text-xs px-3 py-1 border rounded hover:bg-slate-50">Reset Logo</button>
       </div>
 
       {/* Header inputs */}

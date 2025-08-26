@@ -222,11 +222,20 @@ useEffect(() => {
     doc.setFontSize(10);
     const now = new Date(); const dateStr = now.toISOString().slice(0, 10);
     let headerY = top + 14;
+    // Generated first
+    doc.text(`Generated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, left, headerY); headerY += 14;
+    // Then Customer and PO
     if (customer) { doc.text(`Customer: ${customer}`, left, headerY); headerY += 14; }
     if (po) { doc.text(`PO: ${po}`, left, headerY); headerY += 14; }
-    doc.text(`Generated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, left, headerY);
+    // Then Notes right under PO
+    if (notes && notes.trim()) {
+      doc.setFontSize(11); doc.text("Notes:", left, headerY); headerY += 14;
+      doc.setFontSize(10);
+      const wrappedHead = doc.splitTextToSize(notes, pageWidth - left * 2);
+      wrappedHead.forEach((line) => { doc.text(line, left, headerY); headerY += 12; });
+    }
 
-    const yStart = top + 70; // body starts here; notes go in footer later
+    const yStart = Math.max(headerY + 16, top + 70); // body starts below header/notes
 
     const drawCol = (x, title, res) => {
       let y = yStart;
@@ -256,19 +265,7 @@ useEffect(() => {
     drawCol(left, "24 Gauge", result24);
     drawCol(left + colWidth + colGap, "26 Gauge", result26);
 
-    // Footer Notes pinned to bottom of last page
-    if (notes && notes.trim()) {
-      const usableWidth = pageWidth - left * 2;
-      const wrapped = doc.splitTextToSize(notes, usableWidth);
-      const lineHeight = 12;
-      const blockHeight = 16 /*title*/ + wrapped.length * lineHeight;
-      let y = pageHeight - bottom - blockHeight;
-      const lastPage = doc.getNumberOfPages();
-      doc.setPage(lastPage);
-      if (y < top + 10) { doc.addPage(); const ph = doc.internal.pageSize.getHeight(); y = ph - bottom - blockHeight; }
-      doc.setFontSize(11); doc.text("Notes:", left, y); y += 16;
-      doc.setFontSize(10); wrapped.forEach((line) => { doc.text(line, left, y); y += lineHeight; });
-    }
+    
 
     // Global footer centered at the bottom of each page
     const totalPages = doc.getNumberOfPages();
@@ -328,7 +325,7 @@ useEffect(() => {
       </div>
 
       {/* Header inputs */}
-     <div className="mt-4 bg-white border rounded-2xl overflow-hidden">
+     <div className="mt-4 mb-6 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
   <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Job Details</div>
   <div className="px-3 divide-y">
     <div className="flex items-center justify-between gap-3 py-2">
@@ -358,8 +355,7 @@ useEffect(() => {
   </div>
 </div>
 
-            {/* Measurements */}
-      <div className="mt-4 bg-white border rounded-2xl overflow-hidden">
+            <div className="mt-0 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
         <div className="px-3 py-2 text-sm font-semibold bg-slate-50 border-b">Measurements</div>
         <div className="px-3 divide-y">
           <div className="flex items-center justify-between gap-3 py-2">

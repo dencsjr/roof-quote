@@ -221,9 +221,10 @@ useEffect(() => {
     doc.setFontSize(16); doc.text("Metal Roofing Quote", left, top);
     doc.setFontSize(10);
     const now = new Date(); const dateStr = now.toISOString().slice(0, 10);
-    doc.text(`Generated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, left, top + 14);
-    if (customer) doc.text(`Customer: ${customer}`, left, top + 28);
-    if (po) doc.text(`PO: ${po}`, left, top + 42);
+    let headerY = top + 14;
+    if (customer) { doc.text(`Customer: ${customer}`, left, headerY); headerY += 14; }
+    if (po) { doc.text(`PO: ${po}`, left, headerY); headerY += 14; }
+    doc.text(`Generated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, left, headerY);
 
     const yStart = top + 70; // body starts here; notes go in footer later
 
@@ -249,11 +250,6 @@ useEffect(() => {
       doc.text(`Taxable: ${fmt(res.taxableBase || 0)}`, x, y); y += 12;
       doc.text(`Tax (${taxPct}%): ${fmt(res.taxAmt || 0)}`, x, y); y += 12;
       doc.setFontSize(12); doc.text(`Grand Total: ${fmt(res.grandTotal || 0)}`, x, y);
-      // Footer just beneath the totals
-      y += 16;
-      if (y > pageHeight - bottom - 12) { doc.addPage(); y = top; }
-      doc.setFontSize(9);
-      doc.text("Powered by Empire Supply - 801-391-7549", x, y);
     };
 
     // Draw both columns
@@ -274,6 +270,14 @@ useEffect(() => {
       doc.setFontSize(10); wrapped.forEach((line) => { doc.text(line, left, y); y += lineHeight; });
     }
 
+    // Global footer centered at the bottom of each page
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      const ph = doc.internal.pageSize.getHeight ? doc.internal.pageSize.getHeight() : pageHeight;
+      doc.setFontSize(9);
+      doc.text("Powered by Empire Supply - 801-391-7549", pageWidth / 2, ph - 24, { align: "center" });
+    }
     return { doc, dateStr };
   };
 
@@ -344,16 +348,6 @@ useEffect(() => {
     </div>
 
     <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-iws" className="text-sm font-medium whitespace-nowrap">Ice & Water</label>
-      <select id="field-iws" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-              value={iwsChoice}
-              onChange={(e) => setIwsChoice(e.target.value)}>
-        <option value="standard">Polyglass</option>
-        <option value="butyl">GripRite</option>
-      </select>
-    </div>
-
-    <div className="flex items-center justify-between gap-3 py-2">
       <label htmlFor="field-markup" className="text-sm font-medium whitespace-nowrap">Markup %</label>
       <input id="field-markup" type="number" inputMode="decimal"
              className="border p-2 rounded w-48 h-10 max-w-[60vw]"
@@ -391,6 +385,13 @@ useEffect(() => {
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-sqft" className="text-sm font-medium whitespace-nowrap">Total Square Feet</label>
             <input id="field-sqft" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.sqft} onChange={(e) => update("sqft", e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-iws" className="text-sm font-medium whitespace-nowrap">Type of Ice & Water</label>
+            <select id="field-iws" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={iwsChoice} onChange={(e) => setIwsChoice(e.target.value)}>
+              <option value="standard">Polyglass</option>
+              <option value="butyl">GripRite</option>
+            </select>
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-hips" className="text-sm font-medium whitespace-nowrap">Hips (lf)</label>

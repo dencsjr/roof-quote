@@ -6,10 +6,10 @@ import * as JSPDFNS from "jspdf";
 const JsPDF = JSPDFNS.jsPDF || JSPDFNS.default || JSPDFNS;
 
 // --- App Version ---
-const APP_VERSION = "1.1.3"; // fix: closed JSX properly, restored inputs, stable in-app preview
+const APP_VERSION = "1.1.3"; // fixed JSX closing, removed stray placeholders, stable preview/export
 
 // --- Logo asset ---
-// Using your provided logo placed in /public/icons/icon-512.png (served from /icons/icon-512.png)
+// Place your logo at /public/icons/icon-512.png so it serves from /icons/icon-512.png
 const LOGO_SRC = "/icons/icon-512.png";
 
 // --- Formatting helpers ---
@@ -58,26 +58,25 @@ export default function MetalRoofQuoteApp() {
   const [notes, setNotes] = useState("");
 
   // Precompute a DataURL of the logo for embedding into the PDF (jsPDF needs a data URL for reliability)
-const [pdfLogoDataUrl, setPdfLogoDataUrl] = useState(null);
-useEffect(() => {
-  try {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth || 512; canvas.height = img.naturalHeight || 512;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        const data = canvas.toDataURL("image/png");
-        setPdfLogoDataUrl(data);
-      } catch (e) { console.warn("Logo toDataURL failed:", e?.message); }
-    };
-    img.onerror = () => console.warn("Logo failed to load from", LOGO_SRC);
-    img.src = LOGO_SRC;
-  } catch (e) { console.warn("Logo preload error:", e?.message); }
-}, []);
-
+  const [pdfLogoDataUrl, setPdfLogoDataUrl] = useState(null);
+  useEffect(() => {
+    try {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth || 512; canvas.height = img.naturalHeight || 512;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          const data = canvas.toDataURL("image/png");
+          setPdfLogoDataUrl(data);
+        } catch (e) { console.warn("Logo toDataURL failed:", e?.message); }
+      };
+      img.onerror = () => console.warn("Logo failed to load from", LOGO_SRC);
+      img.src = LOGO_SRC;
+    } catch (e) { console.warn("Logo preload error:", e?.message); }
+  }, []);
 
   // In-app preview state
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -193,6 +192,7 @@ useEffect(() => {
     console.assert(approx(100 / PANEL_SQFT_PER_LF, 75.0075), "Panels LF conversion");
     console.assert(sticksPlusOne(0) === 0, "sticksPlusOne(0) -> 0");
     console.assert(sticksPlusOne(10) === 2, "10lf => 1 + 1 extra = 2");
+    console.assert(sticksPlusOne(20) === 3, "20lf => 2 + 1 extra = 3");
     console.assert(sticksPlusOne(0.1) === 2, "very small lf still rounds up then +1");
     console.assert(sticksPlusOne(9.9) === 2, "round-up then +1 for trims (<10lf)");
     console.assert(sticksNoExtra(19) === 2, "round-up to 10' sticks");
@@ -201,6 +201,9 @@ useEffect(() => {
     // filename tests
     console.assert(buildFileName("ACME Roofing", "PO123", "2025-08-19") === "ACME_Roofing-PO123-2025-08-19.pdf", "filename format");
     console.assert(buildFileName("", "", "2025-08-19").startsWith("Quote-"), "fallback filename format");
+    // ensure iws labels
+    console.assert(PRICES.iws.standard.label === "Polyglass", "iws label Polyglass");
+    console.assert(PRICES.iws.butyl.label === "GripRite", "iws label GripRite");
   }, []);
 
   // Build the PDF content once so we can reuse for download or preview
@@ -265,8 +268,6 @@ useEffect(() => {
     drawCol(left, "24 Gauge", result24);
     drawCol(left + colWidth + colGap, "26 Gauge", result26);
 
-    
-
     // Global footer centered at the bottom of each page
     const totalPages = doc.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
@@ -317,45 +318,38 @@ useEffect(() => {
       } catch (err) { console.warn("Data URI preview failed; forcing download:", err?.message); exportPDF(); }
     } catch (e) { console.error("PDF preview failed:", e); exportPDF(); }
   };
+
   return (
     <div className="p-4 max-w-5xl mx-auto">
       <div className="flex items-center gap-3">
         <img src={LOGO_SRC} alt="Empire Supply" className="h-12 w-auto" />
-        <h1 className="text-base font-bold flex items-center gap-2"><FileText className="w-5 h-5"/> Metal Roofing Quote <span className="ml-2 text-slate-500">v{APP_VERSION}</span></h1>
+        <h2 className="text-base font-bold flex items-center gap-2"><FileText className="w-5 h-5"/> Metal Roofing Quote <span className="ml-2 text-slate-500">v{APP_VERSION}</span></h2>
       </div>
       <hr className="my-4 border-t border-slate-300" />
-      {/* Header inputs */}
-     <div className="mt-4 mb-6 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
-  <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Job Details</div>
-  <div className="px-3 divide-y">
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-customer" className="text-sm font-medium whitespace-nowrap">Customer</label>
-      <input id="field-customer" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             placeholder="Customer name"
-             value={customer}
-             onChange={(e) => setCustomer(e.target.value)} />
-    </div>
 
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-po" className="text-sm font-medium whitespace-nowrap">PO</label>
-      <input id="field-po" className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             placeholder="PO #"
-             value={po}
-             onChange={(e) => setPo(e.target.value)} />
-    </div>
+      {/* Job Details */}
+      <div className="mt-4 mb-6 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+        <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Job Details</div>
+        <div className="px-3 divide-y">
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-customer" className="text-sm font-medium whitespace-nowrap">Customer</label>
+            <input id="field-customer" className="border p-2 rounded w-48 h-10 max-w-[60vw]" placeholder="Customer name" value={customer} onChange={(e) => setCustomer(e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-po" className="text-sm font-medium whitespace-nowrap">PO</label>
+            <input id="field-po" className="border p-2 rounded w-48 h-10 max-w-[60vw]" placeholder="PO #" value={po} onChange={(e) => setPo(e.target.value)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2">
+            <label htmlFor="field-markup" className="text-sm font-medium whitespace-nowrap">Markup %</label>
+            <input id="field-markup" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={markupPct} onChange={(e) => setMarkupPct(toNum(e.target.value))} />
+          </div>
+        </div>
+      </div>
 
-    <div className="flex items-center justify-between gap-3 py-2">
-      <label htmlFor="field-markup" className="text-sm font-medium whitespace-nowrap">Markup %</label>
-      <input id="field-markup" type="number" inputMode="decimal"
-             className="border p-2 rounded w-48 h-10 max-w-[60vw]"
-             value={markupPct}
-             onChange={(e) => setMarkupPct(toNum(e.target.value))} />
-    </div>
-
-  </div>
-</div>
       <hr className="my-4 border-t border-slate-300" />
-            <div className="mt-0 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+
+      {/* Measurements */}
+      <div className="mt-0 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
         <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Measurements</div>
         <div className="px-3 divide-y">
           <div className="flex items-center justify-between gap-3 py-2">
@@ -416,6 +410,8 @@ useEffect(() => {
           onChange={(e) => setNotes(e.target.value)}
         />
       </div>
+
+      <hr className="my-4 border-t border-slate-300" />
 
       {/* Side-by-side comparison */}
       <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -516,4 +512,3 @@ useEffect(() => {
     </div>
   );
 }
-

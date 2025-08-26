@@ -215,16 +215,37 @@ export default function MetalRoofQuoteApp() {
     const left = 40, top = 40, bottom = 48, colGap = 40, colWidth = (pageWidth - left * 2 - colGap) / 2;
 
     // Header logo + title
+    let titleY = top; // default if no logo
     try {
       if (pdfLogoDataUrl) {
-        doc.addImage(pdfLogoDataUrl, "PNG", pageWidth / 2 - 130, 16, 260, 60);
+        const maxW = pageWidth - 80; // keep side margins
+        const maxH = 90;            // cap height to preserve space
+        let w = 0, h = 0;
+        try {
+          const props = doc.getImageProperties(pdfLogoDataUrl);
+          const scale = Math.min(maxW / props.width, maxH / props.height);
+          w = props.width * scale;
+          h = props.height * scale;
+        } catch (e) {
+          // Fallback if getImageProperties isn't available
+          w = Math.min(260, pageWidth - 80);
+          h = 60;
+        }
+        const x = (pageWidth - w) / 2;
+        const y = 20; // place near top
+        doc.addImage(pdfLogoDataUrl, "PNG", x, y, w, h);
+        titleY = y + h + 24; // start title several lines below the logo
       }
     } catch (e) { console.warn("Logo skipped in PDF:", e?.message); }
 
-    doc.setFontSize(16); doc.text("Metal Roofing Quote", left, top);
+    // Title
+    doc.setFontSize(16);
+    doc.text("Metal Roofing Quote", left, titleY);
+
+    // Header meta
     doc.setFontSize(10);
     const now = new Date(); const dateStr = now.toISOString().slice(0, 10);
-    let headerY = top + 14;
+    let headerY = titleY + 14;
     // Generated first
     doc.text(`Generated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, left, headerY); headerY += 14;
     // Then Customer and PO

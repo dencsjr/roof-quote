@@ -346,75 +346,75 @@ export default function MetalRoofQuoteApp() {
         <img src={LOGO_SRC} alt="Empire Supply" className="h-12 w-auto" />
         <h2 className="text-base font-bold flex items-center gap-2"><FileText className="w-5 h-5"/> Metal Roofing Quote <span className="ml-2 text-slate-500">v{APP_VERSION}</span></h2>
       </div>
-      <hr className="my-4 border-t border-slate-300" />
+      <hr className="my-4 border-t border-slate-200/60" />
 
       {/* Job Details */}
-      <div className="mt-4 mb-6 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
-        <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Job Details</div>
-        <div className="px-3 divide-y">
+      <div className="mt-4 mb-6 bg-white border border-slate-200/60 rounded-2xl overflow-hidden ring-1 ring-slate-200/50 shadow-sm">
+        <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b border-slate-200/60">Job Details</div>
+        <div className="px-3 divide-y divide-slate-200/60">
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-customer" className="text-sm font-medium whitespace-nowrap">Customer</label>
-            <input id="field-customer" className="border p-2 rounded w-48 h-10 max-w-[60vw]" placeholder="Customer name" value={customer} onChange={(e) => setCustomer(e.target.value)} />
+            <input id="field-customer" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" placeholder="Customer name" value={customer} onChange={(e) => setCustomer(e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-po" className="text-sm font-medium whitespace-nowrap">PO</label>
-            <input id="field-po" className="border p-2 rounded w-48 h-10 max-w-[60vw]" placeholder="PO #" value={po} onChange={(e) => setPo(e.target.value)} />
+            <input id="field-po" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" placeholder="PO #" value={po} onChange={(e) => setPo(e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-markup" className="text-sm font-medium whitespace-nowrap">Markup %</label>
-            <input id="field-markup" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={markupPct} onChange={(e) => setMarkupPct(toNum(e.target.value))} />
+            <input id="field-markup" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={markupPct} onChange={(e) => setMarkupPct(toNum(e.target.value))} />
           </div>
         </div>
       </div>
 
-      <hr className="my-4 border-t border-slate-300" />
+      <hr className="my-4 border-t border-slate-200/60" />
 
       {/* Measurements */}
-      <div className="mt-0 bg-white border border-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
-        <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b">Measurements</div>
-        <div className="px-3 divide-y">
+      <div className="mt-0 bg-white border border-slate-200/60 rounded-2xl overflow-hidden ring-1 ring-slate-200/50 shadow-sm">
+        <div className="px-3 py-2 text-base font-bold uppercase bg-slate-50 border-b border-slate-200/60">Measurements</div>
+        <div className="px-3 divide-y divide-slate-200/60">
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-sqft" className="text-sm font-medium whitespace-nowrap">Total Square Feet</label>
-            <input id="field-sqft" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.sqft} onChange={(e) => update("sqft", e.target.value)} />
+            <input id="field-sqft" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.sqft} onChange={(e) => update("sqft", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-iws" className="text-sm font-medium whitespace-nowrap">Type of Ice & Water</label>
-            <select id="field-iws" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={iwsChoice} onChange={(e) => setIwsChoice(e.target.value)}>
+            <select id="field-iws" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={iwsChoice} onChange={(e) => setIwsChoice(e.target.value)}>
               <option value="standard">Polyglass</option>
               <option value="butyl">GripRite</option>
             </select>
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-hips" className="text-sm font-medium whitespace-nowrap">Hips (lf)</label>
-            <input id="field-hips" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.hips} onChange={(e) => update("hips", e.target.value)} />
+            <input id="field-hips" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.hips} onChange={(e) => update("hips", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-ridges" className="text-sm font-medium whitespace-nowrap">Ridges (lf)</label>
-            <input id="field-ridges" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.ridges} onChange={(e) => update("ridges", e.target.value)} />
+            <input id="field-ridges" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.ridges} onChange={(e) => update("ridges", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-gables" className="text-sm font-medium whitespace-nowrap">Gable Rakes (lf)</label>
-            <input id="field-gables" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.gables} onChange={(e) => update("gables", e.target.value)} />
+            <input id="field-gables" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.gables} onChange={(e) => update("gables", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-eaves" className="text-sm font-medium whitespace-nowrap">Drip Edge / Eaves (lf)</label>
-            <input id="field-eaves" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.eaves} onChange={(e) => update("eaves", e.target.value)} />
+            <input id="field-eaves" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.eaves} onChange={(e) => update("eaves", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-svalleys" className="text-sm font-medium whitespace-nowrap">S-Valleys (lf)</label>
-            <input id="field-svalleys" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.svalleys} onChange={(e) => update("svalleys", e.target.value)} />
+            <input id="field-svalleys" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.svalleys} onChange={(e) => update("svalleys", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-sidewalls" className="text-sm font-medium whitespace-nowrap">Sidewall (lf)</label>
-            <input id="field-sidewalls" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.sidewalls} onChange={(e) => update("sidewalls", e.target.value)} />
+            <input id="field-sidewalls" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.sidewalls} onChange={(e) => update("sidewalls", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-endwalls" className="text-sm font-medium whitespace-nowrap">Endwall (lf)</label>
-            <input id="field-endwalls" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.endwalls} onChange={(e) => update("endwalls", e.target.value)} />
+            <input id="field-endwalls" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.endwalls} onChange={(e) => update("endwalls", e.target.value)} />
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-transitions" className="text-sm font-medium whitespace-nowrap">Transition (lf)</label>
-            <input id="field-transitions" type="number" inputMode="decimal" className="border p-2 rounded w-48 h-10 max-w-[60vw]" value={inputs.transitions} onChange={(e) => update("transitions", e.target.value)} />
+            <input id="field-transitions" type="number" inputMode="decimal" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={inputs.transitions} onChange={(e) => update("transitions", e.target.value)} />
           </div>
         </div>
       </div>
@@ -424,7 +424,7 @@ export default function MetalRoofQuoteApp() {
         <label htmlFor="field-notes" className="text-sm font-medium block mb-1">Notes</label>
         <textarea
           id="field-notes"
-          className="border p-3 rounded w-full h-28"
+          className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-3 rounded-md w-full h-28 bg-white"
           rows={5}
           placeholder="Add any job notes (delivery, special trims, etc.)"
           value={notes}
@@ -432,18 +432,18 @@ export default function MetalRoofQuoteApp() {
         />
       </div>
 
-      <hr className="my-4 border-t border-slate-300" />
+      <hr className="my-4 border-t border-slate-200/60" />
 
       {/* Side-by-side comparison */}
       <div className="mt-6 grid md:grid-cols-2 gap-4">
         {[result24, result26].map((res) => (
-          <div key={res.gauge} className="bg-white border rounded-2xl p-4">
+          <div key={res.gauge} className="bg-white border border-slate-200/60 rounded-2xl p-4">
             <h2 className="font-semibold text-lg">{res.gauge} Gauge</h2>
             <div className="text-sm text-slate-600">Panels: {Number.isFinite(res?.panelLF) ? res.panelLF.toFixed(0) : 0} lf</div>
             {res && res.lines ? (
               <table className="w-full text-sm mt-3">
                 <thead>
-                  <tr className="text-left border-b">
+                  <tr className="text-left border-b border-slate-200/60">
                     <th className="py-1">Item</th>
                     <th className="py-1 text-right">Qty × Unit</th>
                     <th className="py-1 text-right">Total</th>
@@ -453,7 +453,7 @@ export default function MetalRoofQuoteApp() {
                   {res.lines
                     .filter((l) => l.qty > 0 && l.total > 0)
                     .map((ln, idx) => (
-                      <tr key={idx} className="border-b">
+                      <tr key={idx} className="border-b border-slate-200/60">
                         <td className="py-1">{ln.label}</td>
                         <td className="py-1 text-right">{`${ln.qty % 1 === 0 ? ln.qty : Math.round(ln.qty)} ${ln.unit || ""}`} × {fmt(ln.price)}</td>
                         <td className="py-1 text-right">{fmt(ln.total)}</td>
@@ -474,7 +474,7 @@ export default function MetalRoofQuoteApp() {
                 <div className="text-right font-medium">{fmt(res.taxableBase || 0)}</div>
                 <div className="text-slate-600">Tax ({taxPct}%)</div>
                 <div className="text-right font-medium">{fmt(res.taxAmt || 0)}</div>
-                <div className="col-span-2 border-t pt-2 flex items-center">
+                <div className="col-span-2 border-t border-slate-200/60 pt-2 flex items-center">
                   <div className="text-base font-semibold">Grand Total</div>
                   <div className="ml-auto text-base font-semibold">{fmt(res.grandTotal || 0)}</div>
                 </div>
@@ -500,7 +500,7 @@ export default function MetalRoofQuoteApp() {
           onClick={previewPDF}
           aria-label="Preview quote PDF"
           title="Preview quote PDF"
-          className="ml-2 inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white border text-slate-900 cursor-pointer hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-500"
+          className="ml-2 inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white border border-slate-300/60 text-slate-900 cursor-pointer hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400"
         >
           Preview PDF
         </button>
@@ -516,7 +516,7 @@ export default function MetalRoofQuoteApp() {
       {isPreviewOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center" onClick={closePreview}>
           <div className="bg-white w-[95vw] max-w-5xl rounded-xl shadow-xl overflow-hidden" onClick={(e)=>e.stopPropagation()} role="dialog" aria-modal="true" aria-label="PDF Preview">
-            <div className="px-4 py-3 border-b flex items-center justify-between">
+            <div className="px-4 py-3 border-b border-slate-200/60 flex items-center justify-between">
               <div className="font-semibold">PDF Preview</div>
               <div className="flex gap-2">
                 <button type="button" className="text-xs px-3 py-1 border rounded hover:bg-slate-50" onClick={()=>{ try { window.open(previewUrl, '_blank'); } catch {} }}>Open in New Tab</button>

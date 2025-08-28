@@ -42,8 +42,8 @@ const PRICES = {
   z: { "24": 9.96, "26": 9.74 }, // 10' each, NO extra piece
   zPerf: { "24": 27.41, "26": 26.43 }, // 10' each, NO extra piece
   iws: {
-    standard: { label: "Polyglass", price: 64.29, coverSqft: 185 },
-    butyl: { label: "GripRite", price: 129.60, coverSqft: 185 },
+    standard: { label: "Polyglass", price: 64.29, coverSqft: 185, stock: "Out of Stock" },
+    butyl: { label: "GripRite", price: 129.60, coverSqft: 185, stock: "In Stock" },
   },
   clips: { pricePerBox: 246.17, piecesPerBox: 1000, lfPerPiece: 2 }, // 1 piece per 2 lf panels
   screws: { pricePerBag: 18.91, piecesPerBag: 250, lfPerPiece: 1 }, // 1 screw per lf panels
@@ -380,8 +380,8 @@ export default function MetalRoofQuoteApp() {
           <div className="flex items-center justify-between gap-3 py-2">
             <label htmlFor="field-iws" className="text-sm font-medium whitespace-nowrap">Type of Ice & Water</label>
             <select id="field-iws" className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-2 rounded-md w-48 h-10 max-w-[60vw] bg-white" value={iwsChoice} onChange={(e) => setIwsChoice(e.target.value)}>
-              <option value="standard">Polyglass</option>
-              <option value="butyl">GripRite</option>
+              <option value="standard">{`${PRICES.iws.standard.label} (${PRICES.iws.standard.stock})`}</option>
+              <option value="butyl">{`${PRICES.iws.butyl.label} (${PRICES.iws.butyl.stock})`}</option>
             </select>
           </div>
           <div className="flex items-center justify-between gap-3 py-2">

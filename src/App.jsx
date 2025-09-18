@@ -94,6 +94,12 @@ export default function MetalRoofQuoteApp() {
   };
   useEffect(() => () => { try { if (previewUrl && previewUrl.startsWith("blob:")) URL.revokeObjectURL(previewUrl); } catch {} }, [previewUrl]);
 
+  // PDF options
+  const [pdfHidePrices, setPdfHidePrices] = useState(() => {
+    try { return localStorage.getItem("pdfHidePrices") === "1"; } catch { return false; }
+  });
+  useEffect(() => { try { localStorage.setItem("pdfHidePrices", pdfHidePrices ? "1" : "0"); } catch {} }, [pdfHidePrices]);
+
   // Pricing modifiers
   const [markupPct, setMarkupPct] = useState(() => {
     const saved = localStorage.getItem("lastMarkup");
@@ -310,17 +316,23 @@ export default function MetalRoofQuoteApp() {
       const lines = (res?.lines || []).filter((l) => l.qty > 0 && l.total > 0);
       lines.forEach((ln) => {
         const qtyStr = `${ln.qty % 1 === 0 ? ln.qty : Math.round(ln.qty)} ${ln.unit || ""}`;
-        const leftText = `${ln.label}  (${qtyStr} × ${fmt(ln.price)})`;
+        const leftText = pdfHidePrices
+          ? `${ln.label}  (${qtyStr})`
+          : `${ln.label}  (${qtyStr} × ${fmt(ln.price)})`;
         doc.text(leftText, x, y);
-        doc.text(fmt(ln.total), x + colWidth - 8, y, { align: "right" });
+        if (!pdfHidePrices) {
+          doc.text(fmt(ln.total), x + colWidth - 8, y, { align: "right" });
+        }
         y += 12;
         if (y > pageHeight - bottom - 80) { doc.addPage(); y = top; }
       });
 
       y += 8; doc.line(x, y, x + colWidth, y); y += 12;
       doc.text(`Subtotal: ${fmt(res.subtotal || 0)}`, x, y); y += 12;
-      doc.text(`Markup (${markupPct}%): ${fmt(res.markupAmt || 0)}`, x, y); y += 12;
-      doc.text(`Taxable: ${fmt(res.taxableBase || 0)}`, x, y); y += 12;
+      if (!pdfHidePrices) {
+        doc.text(`Markup (${markupPct}%): ${fmt(res.markupAmt || 0)}`, x, y); y += 12;
+        doc.text(`Taxable: ${fmt(res.taxableBase || 0)}`, x, y); y += 12;
+      }
       doc.text(`Tax (${taxPct}%): ${fmt(res.taxAmt || 0)}`, x, y); y += 12;
       doc.setFontSize(12); doc.text(`Grand Total: ${fmt(res.grandTotal || 0)}`, x, y);
     };
@@ -478,69 +490,6 @@ export default function MetalRoofQuoteApp() {
 
       {/* Notes */}
       <div className="mt-4">
-        <label htmlFor="field-notes" className="text-sm font-medium block mb-1">Notes</label>
-        <textarea
-          id="field-notes"
-          className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-3 rounded-md w-full h-28 bg-white"
-          rows={5}
-          placeholder="Add any job notes (special trims, etc.)"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-      </div>
-
-      <hr className="my-4 border-t border-slate-200/60" />
-
-      {/* Side-by-side comparison */}
-      <div className="mt-6 grid md:grid-cols-2 gap-4">
-        {[result24, result26].map((res) => (
-          <div key={res.gauge} className="bg-white border border-slate-200/60 rounded-2xl p-4">
-            <h2 className="font-semibold text-lg">{res.gauge} Gauge</h2>
-            {res && res.lines ? (
-              <table className="w-full text-sm mt-3">
-                <thead>
-                  <tr className="text-left border-b border-slate-200/60">
-                    <th className="py-1">Item</th>
-                    <th className="py-1 text-right">Qty × Unit</th>
-                    <th className="py-1 text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {res.lines
-                    .filter((l) => l.qty > 0 && l.total > 0)
-                    .map((ln, idx) => (
-                      <tr key={idx} className="border-b border-slate-200/60">
-                        <td className="py-1">{ln.label}</td>
-                        <td className="py-1 text-right">{`${ln.qty % 1 === 0 ? ln.qty : Math.round(ln.qty)} ${ln.unit || ""}`} × {fmt(ln.price)}</td>
-                        <td className="py-1 text-right">{fmt(ln.total)}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-sm text-slate-500 mt-2">Enter measurements to see pricing.</div>
-            )}
-            {res && (
-              <div className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                <div className="text-slate-600">Subtotal</div>
-                <div className="text-right font-medium">{fmt(res.subtotal || 0)}</div>
-                <div className="text-slate-600">Markup ({markupPct}%)</div>
-                <div className="text-right font-medium">{fmt(res.markupAmt || 0)}</div>
-                <div className="text-slate-600">Taxable</div>
-                <div className="text-right font-medium">{fmt(res.taxableBase || 0)}</div>
-                <div className="text-slate-600">Tax ({taxPct}%)</div>
-                <div className="text-right font-medium">{fmt(res.taxAmt || 0)}</div>
-                <div className="col-span-2 border-t border-slate-200/60 pt-2 flex items-center">
-                  <div className="text-base font-semibold">Grand Total</div>
-                  <div className="ml-auto text-base font-semibold">{fmt(res.grandTotal || 0)}</div>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4">
         <button
           type="button"
           onClick={exportPDF}
@@ -560,6 +509,10 @@ export default function MetalRoofQuoteApp() {
         >
           Preview PDF
         </button>
+        <label className="ml-3 inline-flex items-center gap-2 text-sm align-middle">
+          <input type="checkbox" className="h-4 w-4" checked={pdfHidePrices} onChange={(e)=>setPdfHidePrices(e.target.checked)} />
+          Hide line prices & markup on PDF
+        </label>
       </div>
 
       {/* Spacers and footer */}

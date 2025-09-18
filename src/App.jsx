@@ -490,6 +490,69 @@ export default function MetalRoofQuoteApp() {
 
       {/* Notes */}
       <div className="mt-4">
+        <label htmlFor="field-notes" className="text-sm font-medium block mb-1">Notes</label>
+        <textarea
+          id="field-notes"
+          className="border border-slate-300/60 focus:border-slate-400/50 focus:ring-1 focus:ring-slate-400/30 p-3 rounded-md w-full h-28 bg-white"
+          rows={5}
+          placeholder="Add any job notes (special trims, etc.)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+      </div>
+
+      <hr className="my-4 border-t border-slate-200/60" />
+
+      {/* Side-by-side comparison */}
+      <div className="mt-6 grid md:grid-cols-2 gap-4">
+        {[result24, result26].map((res) => (
+          <div key={res.gauge} className="bg-white border border-slate-200/60 rounded-2xl p-4">
+            <h2 className="font-semibold text-lg">{res.gauge} Gauge</h2>
+            {res && res.lines ? (
+              <table className="w-full text-sm mt-3">
+                <thead>
+                  <tr className="text-left border-b border-slate-200/60">
+                    <th className="py-1">Item</th>
+                    <th className="py-1 text-right">Qty × Unit</th>
+                    <th className="py-1 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {res.lines
+                    .filter((l) => l.qty > 0 && l.total > 0)
+                    .map((ln, idx) => (
+                      <tr key={idx} className="border-b border-slate-200/60">
+                        <td className="py-1">{ln.label}</td>
+                        <td className="py-1 text-right">{`${ln.qty % 1 === 0 ? ln.qty : Math.round(ln.qty)} ${ln.unit || ""}`} × {fmt(ln.price)}</td>
+                        <td className="py-1 text-right">{fmt(ln.total)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="text-sm text-slate-500 mt-2">Enter measurements to see pricing.</div>
+            )}
+            {res && (
+              <div className="mt-3 grid grid-cols-2 gap-1 text-sm">
+                <div className="text-slate-600">Subtotal</div>
+                <div className="text-right font-medium">{fmt(res.subtotal || 0)}</div>
+                <div className="text-slate-600">Markup ({markupPct}%)</div>
+                <div className="text-right font-medium">{fmt(res.markupAmt || 0)}</div>
+                <div className="text-slate-600">Taxable</div>
+                <div className="text-right font-medium">{fmt(res.taxableBase || 0)}</div>
+                <div className="text-slate-600">Tax ({taxPct}%)</div>
+                <div className="text-right font-medium">{fmt(res.taxAmt || 0)}</div>
+                <div className="col-span-2 border-t border-slate-200/60 pt-2 flex items-center">
+                  <div className="text-base font-semibold">Grand Total</div>
+                  <div className="ml-auto text-base font-semibold">{fmt(res.grandTotal || 0)}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4">
         <button
           type="button"
           onClick={exportPDF}

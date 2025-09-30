@@ -328,7 +328,11 @@ export default function MetalRoofQuoteApp() {
       });
 
       y += 8; doc.line(x, y, x + colWidth, y); y += 12;
-      doc.text(`Subtotal: ${fmt(res.subtotal || 0)}`, x, y); y += 12;
+      // When prices are hidden, roll the markup into the displayed Subtotal
+      const displayedSubtotal = pdfHidePrices
+        ? (Number(res.subtotal || 0) + Number(res.markupAmt || 0))
+        : Number(res.subtotal || 0);
+      doc.text(`Subtotal: ${fmt(displayedSubtotal)}`, x, y); y += 12;
       if (!pdfHidePrices) {
         doc.text(`Markup (${markupPct}%): ${fmt(res.markupAmt || 0)}`, x, y); y += 12;
         doc.text(`Taxable: ${fmt(res.taxableBase || 0)}`, x, y); y += 12;

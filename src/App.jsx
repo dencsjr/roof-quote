@@ -297,6 +297,9 @@ export default function MetalRoofQuoteApp() {
     if (po) { doc.text(`PO: ${po}`, left, headerY); headerY += 14; }
     // Waste % (applied to panels only)
     doc.text(`Waste: ${toNum(inputs.wastePct)}% (applied to panels only)`, left, headerY); headerY += 14;
+    // Total Square Feet including waste (for PDF display)
+    const effSqftPdf = Math.round(toNum(inputs.sqft) * (1 + toNum(inputs.wastePct) / 100));
+    doc.text(`Total Square Feet (including waste): ${effSqftPdf.toLocaleString()}`, left, headerY); headerY += 14;
     // Then Notes right under PO
     if (notes && notes.trim()) {
       doc.setFontSize(11); doc.text("Notes:", left, headerY); headerY += 14;

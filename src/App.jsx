@@ -61,7 +61,7 @@ export default function MetalRoofQuoteApp() {
   const [style, setStyle] = useState(STYLE_OPTIONS[0]);
 
   // Ice & Water choice
-  const [iwsChoice, setIwsChoice] = useState("butyl"); // default GripRite (in stock)
+  const [iwsChoice, setIwsChoice] = useState("butyl"); // default GripRite (in stock) // 'none' supported
 
   // Fasteners choice (mutually exclusive behavior in calc)
   const [fastenerChoice, setFastenerChoice] = useState("Plastic Cap Nails");
@@ -163,8 +163,10 @@ export default function MetalRoofQuoteApp() {
     const trimCost = Object.entries(pieces).reduce((s, [k, q]) => s + q * (trimPrices[k] ?? 0), 0);
 
     // Ice & Water (raw sqft, +1 roll)
-    const iws = PRICES.iws[iwsChoice] || { label: "Ice & Water", price: 0, coverSqft: 185 };
-    const iwsQty = inputs.sqft > 0 ? Math.ceil(inputs.sqft / iws.coverSqft) + 1 : 0;
+    const iws = iwsChoice === 'none'
+      ? { label: 'Ice & Water (None)', price: 0, coverSqft: 185 }
+      : (PRICES.iws[iwsChoice] || { label: 'Ice & Water', price: 0, coverSqft: 185 });
+    const iwsQty = iwsChoice === 'none' ? 0 : (inputs.sqft > 0 ? Math.ceil(inputs.sqft / iws.coverSqft) + 1 : 0);
     const iwsCost = iwsQty * iws.price;
 
     // Panel clips: not used for 1" Snap Lock
@@ -191,6 +193,8 @@ export default function MetalRoofQuoteApp() {
     let stapleCost  = stapleBoxes * PRICES.staples.pricePerBox;
 
     // Fastener exclusivity
+    if (fastenerChoice !== 'Crossfire Staples') { stapleBoxes = 0; stapleCost = 0; }
+
     if (fastenerChoice === 'Plastic Cap Nails') { stapleBoxes = 0; stapleCost = 0; }
 
     const subtotal   = panelCost + trimCost + iwsCost + clipCost + screwCost + zCost + zPerfCost + stapleCost;
@@ -382,12 +386,14 @@ export default function MetalRoofQuoteApp() {
             <select id="field-iws" className="input" value={iwsChoice} onChange={e=>setIwsChoice(e.target.value)}>
               <option value="butyl">{`${PRICES.iws.butyl.label} (${PRICES.iws.butyl.stock})`}</option>
               <option value="standard">{`${PRICES.iws.standard.label} (${PRICES.iws.standard.stock})`}</option>
+              <option value="none">None</option>
             </select>
           </Row>
           <Row label="Nails / Staples">
             <select id="field-fasteners" className="input" value={fastenerChoice} onChange={e=>setFastenerChoice(e.target.value)}>
               <option value="Plastic Cap Nails">Plastic Cap Nails</option>
               <option value="Crossfire Staples">Crossfire Staples</option>
+              <option value="None">None</option>
             </select>
           </Row>
           <Row label="Hips (lf)"><Num id="field-hips" v={inputs.hips} onCh={v=>update("hips", v)} /></Row>

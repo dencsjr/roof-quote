@@ -48,6 +48,7 @@ const PRICES = {
   clips:   { pricePerBox: 246.17, piecesPerBox: 1000, lfPerPiece: 2 },
   screws:  { pricePerBag: 18.91,  piecesPerBag: 250,  lfPerPiece: 1 },
   staples: { pricePerBox: 48.79,  sqftPerBox: 1500 },
+  plasticCap: { pricePerPail: 18.84, sqftPerPail: 1500 },
 };
 
 export default function MetalRoofQuoteApp() {
@@ -61,10 +62,10 @@ export default function MetalRoofQuoteApp() {
   const [style, setStyle] = useState(STYLE_OPTIONS[0]);
 
   // Ice & Water choice
-  const [iwsChoice, setIwsChoice] = useState("butyl"); // default GripRite (in stock) // 'none' supported
+  const [iwsChoice, setIwsChoice] = useState("none"); // default None (no Ice & Water)
 
   // Fasteners choice (mutually exclusive behavior in calc)
-  const [fastenerChoice, setFastenerChoice] = useState("Plastic Cap Nails");
+  const [fastenerChoice, setFastenerChoice] = useState("None");
 
   // Persisted modifiers
   const [markupPct, setMarkupPct] = useState(() => {
@@ -126,8 +127,8 @@ export default function MetalRoofQuoteApp() {
     try {
       const d = rec?.data || {};
       setCustomer(d.customer || ""); setPo(d.po || ""); setNotes(d.notes || "");
-      setStyle(d.style || STYLE_OPTIONS[0]); setIwsChoice(d.iwsChoice || "butyl");
-      setFastenerChoice(d.fastenerChoice || "Plastic Cap Nails");
+      setStyle(d.style || STYLE_OPTIONS[0]); setIwsChoice(d.iwsChoice || "none");
+      setFastenerChoice(d.fastenerChoice || "None");
       setMarkupPct(typeof d.markupPct === 'number' ? d.markupPct : markupPct);
       if (typeof d.pdfHidePrices === 'boolean') setPdfHidePrices(d.pdfHidePrices);
       setInputs({
@@ -192,12 +193,24 @@ export default function MetalRoofQuoteApp() {
     let stapleBoxes = inputs.sqft > 0 ? Math.ceil(inputs.sqft / PRICES.staples.sqftPerBox) : 0;
     let stapleCost  = stapleBoxes * PRICES.staples.pricePerBox;
 
-    // Fastener exclusivity
-    if (fastenerChoice !== 'Crossfire Staples') { stapleBoxes = 0; stapleCost = 0; }
+    // Plastic Cap Nails (pails) — same sqft coverage as staples
+    let pailPails = inputs.sqft > 0 ? Math.ceil(inputs.sqft / (PRICES.plasticCap.sqftPerPail || 1500)) : 0;
+    let pailCost  = pailPails * PRICES.plasticCap.pricePerPail;
 
-    if (fastenerChoice === 'Plastic Cap Nails') { stapleBoxes = 0; stapleCost = 0; }
+    // Fastener exclusivity (mutually exclusive)
+    if (fastenerChoice === 'Crossfire Staples') {
+      // keep staples; remove plastic caps
+      pailPails = 0; pailCost = 0;
+    } else if (fastenerChoice === 'Plastic Cap Nails') {
+      // keep plastic caps; remove staples
+      stapleBoxes = 0; stapleCost = 0;
+    } else {
+      // None: remove both
+      stapleBoxes = 0; stapleCost = 0; pailPails = 0; pailCost = 0;
+    }
 
-    const subtotal   = panelCost + trimCost + iwsCost + clipCost + screwCost + zCost + zPerfCost + stapleCost;
+    // ✅ FIX: compute subtotal once (no extra assignment)
+    const subtotal = panelCost + trimCost + iwsCost + clipCost + screwCost + zCost + zPerfCost + stapleCost + pailCost;
     const markupAmt  = (toNum(markupPct) / 100) * subtotal;
     const taxable    = subtotal + markupAmt;
     const taxAmt     = (toNum(taxPct) / 100) * taxable;
@@ -221,6 +234,7 @@ export default function MetalRoofQuoteApp() {
         { label: "Pancake Screws", qty: screwBags,     unit: "bag",     price: PRICES.screws.pricePerBag, total: screwCost },
         { label: "Z Metal",    qty: zQty,              unit: "10' pcs", price: PRICES.z[gauge] ?? 0,     total: zCost },
         { label: "Perforated Z Metal", qty: zPerfQty,  unit: "10' pcs", price: PRICES.zPerf[gauge] ?? 0, total: zPerfCost },
+        { label: "Plastic Cap Pail", qty: pailPails,   unit: "pail",   price: PRICES.plasticCap.pricePerPail, total: pailCost },
         { label: "Staple Pack",qty: stapleBoxes,       unit: "box",     price: PRICES.staples.pricePerBox, total: stapleCost },
       ],
       subtotal, markupAmt, taxableBase: taxable, taxAmt, grandTotal,
@@ -229,6 +243,16 @@ export default function MetalRoofQuoteApp() {
 
   const result24 = useMemo(() => calcForGauge("24"), [inputs, iwsChoice, markupPct, style, fastenerChoice]);
   const result26 = useMemo(() => calcForGauge("26"), [inputs, iwsChoice, markupPct, style, fastenerChoice]);
+
+  // Tiny sanity checks in dev
+  useEffect(() => {
+    try {
+      const approx = (a,b)=>Math.abs(a-b)<0.05;
+      console.assert(approx(100 / PANEL_SQFT_PER_LF, 75.0075), "Panels LF conversion");
+      console.assert(sticksNoExtra(0) === 0 && sticksNoExtra(9.9) === 1 && sticksNoExtra(10) === 1 && sticksNoExtra(10.1) === 2, "sticksNoExtra rounding");
+      console.assert(sticksPlusOne(0) === 0 && sticksPlusOne(1) === 2, "sticksPlusOne logic");
+    } catch {}
+  }, []);
 
   // ===== PDF =====
   const buildPdfDoc = () => {
@@ -384,16 +408,16 @@ export default function MetalRoofQuoteApp() {
           <Row label="Waste %"><Num id="field-waste" v={inputs.wastePct} onCh={v=>update("wastePct", v)} /></Row>
           <Row label="Type of Ice & Water">
             <select id="field-iws" className="input" value={iwsChoice} onChange={e=>setIwsChoice(e.target.value)}>
+              <option value="none">None</option>
               <option value="butyl">{`${PRICES.iws.butyl.label} (${PRICES.iws.butyl.stock})`}</option>
               <option value="standard">{`${PRICES.iws.standard.label} (${PRICES.iws.standard.stock})`}</option>
-              <option value="none">None</option>
             </select>
           </Row>
           <Row label="Nails / Staples">
             <select id="field-fasteners" className="input" value={fastenerChoice} onChange={e=>setFastenerChoice(e.target.value)}>
+              <option value="None">None</option>
               <option value="Plastic Cap Nails">Plastic Cap Nails</option>
               <option value="Crossfire Staples">Crossfire Staples</option>
-              <option value="None">None</option>
             </select>
           </Row>
           <Row label="Hips (lf)"><Num id="field-hips" v={inputs.hips} onCh={v=>update("hips", v)} /></Row>
